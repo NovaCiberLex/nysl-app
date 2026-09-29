@@ -1,4 +1,5 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
+import TopBar from './components/TopBar';
 import NavBar from './components/NavBar';
 import Home from './components/Home';
 import Schedule from './components/Schedule';
@@ -6,6 +7,7 @@ import GameDetail from './components/GameDetail';
 
 const App = () => (
   <HashRouter>
+    <TopBar />
     <main style={{ paddingBottom: '80px' }}>
       <Routes>
         <Route path="/" element={<Home />} />

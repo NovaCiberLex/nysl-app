@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/nysl-app/static/css/main.a9a44919.css",
-    "main.js": "/nysl-app/static/js/main.2ac36c1a.js",
+    "main.js": "/nysl-app/static/js/main.15d51086.js",
     "static/js/453.fe65df50.chunk.js": "/nysl-app/static/js/453.fe65df50.chunk.js",
     "static/media/nysl_logo.png": "/nysl-app/static/media/nysl_logo.debd510582abbbb8bf8d.png",
     "service-worker.js": "/nysl-app/service-worker.js",
     "index.html": "/nysl-app/index.html",
     "main.a9a44919.css.map": "/nysl-app/static/css/main.a9a44919.css.map",
-    "main.2ac36c1a.js.map": "/nysl-app/static/js/main.2ac36c1a.js.map",
+    "main.15d51086.js.map": "/nysl-app/static/js/main.15d51086.js.map",
     "453.fe65df50.chunk.js.map": "/nysl-app/static/js/453.fe65df50.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.a9a44919.css",
-    "static/js/main.2ac36c1a.js"
+    "static/js/main.15d51086.js"
   ]
 }

@@ -2,7 +2,7 @@
   "name": "nysl-app",
   "version": "0.1.0",
   "private": true,
-    "homepage": "https://novaciberlex.github.io/nysl-app",
+  "homepage": "https://novaciberlex.github.io/nysl-app",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^13.0.0",
@@ -11,6 +11,7 @@
     "cra-template-pwa": "2.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^7.18.4",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.4.2",

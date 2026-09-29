@@ -1,10 +1,8 @@
-
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import data from '../data/nysl-data.json';
-import { useUserState, useMessages, signInWithGoogle } from '../firebase';
+import { useUserState, useMessages, postMessage, signInWithGoogle } from '../firebase';
 
-// Show only the time, in Chicago time (where the games are played)
 const formatTime = (timestamp) =>
   new Date(timestamp).toLocaleTimeString('en-US', {
     hour: 'numeric',
@@ -22,13 +20,32 @@ const MessageBoard = () => {
   const { id } = useParams();
   const [user] = useUserState();
   const [messages, loading] = useMessages(id, user);
+  const [text, setText] = useState('');
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
   const bottomRef = useRef(null);
   const game = data.games[id];
 
-  // Open the screen scrolled down to the newest message
   useEffect(() => {
     if (bottomRef.current) bottomRef.current.scrollIntoView();
   }, [messages.length, user]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const cleanText = text.trim();
+    if (!cleanText) return;
+
+    setSending(true);
+    setError('');
+    try {
+      await postMessage(id, user, cleanText);
+      setText('');
+    } catch {
+      setError("Your message wasn't posted. Check your connection and try again.");
+    } finally {
+      setSending(false);
+    }
+  };
 
   if (!game) {
     return (
@@ -39,7 +56,6 @@ const MessageBoard = () => {
     );
   }
 
-  // Only signed-in users can read the messages
   if (!user) {
     return (
       <div className="container py-3">
@@ -54,7 +70,7 @@ const MessageBoard = () => {
   }
 
   return (
-    <div className="container py-3">
+    <div className="container py-3" style={{ paddingBottom: '70px' }}>
       <Link to={`/game/${id}`} className="btn btn-link px-0 mb-2">&larr; Back to game</Link>
       <h1 className="h4 mb-1">Message board</h1>
       <p className="text-muted mb-3">
@@ -88,6 +104,31 @@ const MessageBoard = () => {
       })}
 
       <div ref={bottomRef} />
+
+      {/* Message box fixed above the bottom nav bar */}
+      <form
+        onSubmit={handleSubmit}
+        className="position-fixed start-0 end-0 bg-white border-top py-2"
+        style={{ bottom: '56px', zIndex: 1020 }}
+      >
+        <div className="container d-flex gap-2">
+          <label htmlFor="new-message" className="visually-hidden">Message</label>
+          <input
+            id="new-message"
+            className="form-control"
+            placeholder="Type a message"
+            value={text}
+            onChange={(event) => setText(event.target.value)}
+            maxLength={280}
+            autoComplete="off"
+            enterKeyHint="send"
+          />
+          <button type="submit" className="btn btn-dark" disabled={sending || !text.trim()}>
+            Post
+          </button>
+        </div>
+        {error && <div className="container small text-danger mt-1">{error}</div>}
+      </form>
     </div>
   );
 };

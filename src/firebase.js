@@ -7,7 +7,7 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged
 } from 'firebase/auth';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue, push, serverTimestamp } from 'firebase/database';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -74,3 +74,12 @@ export const useMessages = (gameId, user) => {
 
   return [messages, loading];
 };
+
+// Adds a new message to a game's board
+export const postMessage = (gameId, user, text) =>
+  push(ref(database, `messages/${gameId}`), {
+    author: user.displayName || user.email,
+    email: user.email,
+    text,
+    timestamp: serverTimestamp()
+  });

@@ -13,12 +13,12 @@ const formatDate = (isoDate) => {
 };
 
 const GameDetail = () => {
-  // Read the :id part of the URL, e.g. /game/2026_09_01_1 -> "2026_09_01_1"
+  
   const { id } = useParams();
   const [user] = useUserState();
   const game = data.games[id];
 
-  // If someone opens a URL for a game that doesn't exist
+  
   if (!game) {
     return (
       <div className="container py-3">

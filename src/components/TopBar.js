@@ -3,7 +3,6 @@ import { signInWithGoogle, signOut, useUserState } from '../firebase';
 const TopBar = () => {
   const [user] = useUserState();
 
-  // If the user closes the Google pop-up, just stay on the same screen
   const handleSignIn = () => signInWithGoogle().catch(() => {});
 
   return (

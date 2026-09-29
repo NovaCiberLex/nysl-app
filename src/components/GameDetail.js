@@ -13,12 +13,10 @@ const formatDate = (isoDate) => {
 };
 
 const GameDetail = () => {
-  
   const { id } = useParams();
   const [user] = useUserState();
   const game = data.games[id];
 
-  
   if (!game) {
     return (
       <div className="container py-3">
@@ -70,15 +68,20 @@ const GameDetail = () => {
       </a>
 
       {user ? (
-        <Link to={`/game/${id}/messages`} className="btn btn-outline-dark w-100 fw-bold">
-          Message board
-        </Link>
+        <div className="d-flex gap-2">
+          <Link to={`/game/${id}/messages`} className="btn btn-outline-dark w-50 fw-bold">
+            Message board
+          </Link>
+          <Link to={`/game/${id}/photos`} className="btn btn-outline-dark w-50 fw-bold">
+            Photo board
+          </Link>
+        </div>
       ) : (
         <button
           className="btn btn-outline-dark w-100"
           onClick={() => signInWithGoogle().catch(() => {})}
         >
-          Sign in to read and post messages
+          Sign in to see messages and photos
         </button>
       )}
     </div>

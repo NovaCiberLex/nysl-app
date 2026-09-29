@@ -9,7 +9,6 @@ import {
 } from 'firebase/auth';
 import { getDatabase, ref, onValue, push, serverTimestamp } from 'firebase/database';
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCnAo4n5M1NtevgFHaRSXrI6II3rz1Kauc",
   authDomain: "nysl-app-8c3dc.firebaseapp.com",
@@ -20,66 +19,71 @@ const firebaseConfig = {
   appId: "1:417341191888:web:8ea6361f79ed2779edd0d5"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 export const database = getDatabase(app);
 
-// Opens the Google pop-up to sign in
 export const signInWithGoogle = () =>
   signInWithPopup(auth, new GoogleAuthProvider());
 
-// Signs the current user out
 export const signOut = () => firebaseSignOut(auth);
 
-// Returns the signed-in user (or null if nobody is signed in)
 export const useUserState = () => {
   const [user, setUser] = useState(auth.currentUser);
   useEffect(() => onAuthStateChanged(auth, setUser), []);
   return [user];
 };
 
-// Returns the messages of one game, oldest first, and keeps them up to date
-export const useMessages = (gameId, user) => {
-  const [messages, setMessages] = useState([]);
+const useGameList = (folder, gameId, user) => {
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Only signed-in users can read messages
     if (!user) {
-      setMessages([]);
+      setItems([]);
       setLoading(false);
       return;
     }
 
     setLoading(true);
-    const messagesRef = ref(database, `messages/${gameId}`);
+    const listRef = ref(database, `${folder}/${gameId}`);
 
-    // onValue runs now and again every time the messages change
     const stopListening = onValue(
-      messagesRef,
+      listRef,
       (snapshot) => {
         const data = snapshot.val() || {};
         const list = Object.entries(data)
-          .map(([key, message]) => ({ key, ...message }))
+          .map(([key, item]) => ({ key, ...item }))
           .sort((a, b) => a.timestamp - b.timestamp);
-        setMessages(list);
+        setItems(list);
         setLoading(false);
       },
       () => setLoading(false)
     );
 
     return stopListening;
-  }, [gameId, user]);
+  }, [folder, gameId, user]);
 
-  return [messages, loading];
+  return [items, loading];
 };
 
-// Adds a new message to a game's board
+export const useMessages = (gameId, user) => useGameList('messages', gameId, user);
+
+export const usePictures = (gameId, user) => useGameList('pictures', gameId, user);
+
 export const postMessage = (gameId, user, text) =>
   push(ref(database, `messages/${gameId}`), {
     author: user.displayName || user.email,
     email: user.email,
     text,
+    timestamp: serverTimestamp()
+  });
+
+export const postPicture = (gameId, user, url, caption) =>
+  push(ref(database, `pictures/${gameId}`), {
+    author: user.displayName || user.email,
+    email: user.email,
+    url,
+    caption,
     timestamp: serverTimestamp()
   });

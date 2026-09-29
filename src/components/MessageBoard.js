@@ -1,8 +1,8 @@
+
 import { useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import data from '../data/nysl-data.json';
-import sample from '../data/nysl-messages.json';
-import { useUserState, signInWithGoogle } from '../firebase';
+import { useUserState, useMessages, signInWithGoogle } from '../firebase';
 
 // Show only the time, in Chicago time (where the games are played)
 const formatTime = (timestamp) =>
@@ -21,13 +21,9 @@ const formatDate = (isoDate) => {
 const MessageBoard = () => {
   const { id } = useParams();
   const [user] = useUserState();
+  const [messages, loading] = useMessages(id, user);
   const bottomRef = useRef(null);
   const game = data.games[id];
-
-  // Turn the messages object into a list, oldest first
-  const messages = Object.entries(sample.messages[id] || {})
-    .map(([key, message]) => ({ key, ...message }))
-    .sort((a, b) => a.timestamp - b.timestamp);
 
   // Open the screen scrolled down to the newest message
   useEffect(() => {
@@ -65,7 +61,9 @@ const MessageBoard = () => {
         {game.teams[0]} vs {game.teams[1]} - {formatDate(game.date)}, {game.time}
       </p>
 
-      {messages.length === 0 && (
+      {loading && <p className="text-muted">Loading messages...</p>}
+
+      {!loading && messages.length === 0 && (
         <p className="text-muted">No messages yet. Be the first to post one.</p>
       )}
 

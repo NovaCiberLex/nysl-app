@@ -7,11 +7,13 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged
 } from 'firebase/auth';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCnAo4n5M1NtevgFHaRSXrI6II3rz1Kauc",
   authDomain: "nysl-app-8c3dc.firebaseapp.com",
+  databaseURL: "https://nysl-app-8c3dc-default-rtdb.firebaseio.com",
   projectId: "nysl-app-8c3dc",
   storageBucket: "nysl-app-8c3dc.firebasestorage.app",
   messagingSenderId: "417341191888",
@@ -21,6 +23,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+export const database = getDatabase(app);
 
 // Opens the Google pop-up to sign in
 export const signInWithGoogle = () =>
@@ -34,4 +37,40 @@ export const useUserState = () => {
   const [user, setUser] = useState(auth.currentUser);
   useEffect(() => onAuthStateChanged(auth, setUser), []);
   return [user];
+};
+
+// Returns the messages of one game, oldest first, and keeps them up to date
+export const useMessages = (gameId, user) => {
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Only signed-in users can read messages
+    if (!user) {
+      setMessages([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    const messagesRef = ref(database, `messages/${gameId}`);
+
+    // onValue runs now and again every time the messages change
+    const stopListening = onValue(
+      messagesRef,
+      (snapshot) => {
+        const data = snapshot.val() || {};
+        const list = Object.entries(data)
+          .map(([key, message]) => ({ key, ...message }))
+          .sort((a, b) => a.timestamp - b.timestamp);
+        setMessages(list);
+        setLoading(false);
+      },
+      () => setLoading(false)
+    );
+
+    return stopListening;
+  }, [gameId, user]);
+
+  return [messages, loading];
 };

@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import data from '../data/nysl-data.json';
+import { useUserState, signInWithGoogle } from '../firebase';
 
 const formatDate = (isoDate) => {
   const [year, month, day] = isoDate.split('-');
@@ -14,6 +15,7 @@ const formatDate = (isoDate) => {
 const GameDetail = () => {
   // Read the :id part of the URL, e.g. /game/2026_09_01_1 -> "2026_09_01_1"
   const { id } = useParams();
+  const [user] = useUserState();
   const game = data.games[id];
 
   // If someone opens a URL for a game that doesn't exist
@@ -62,10 +64,23 @@ const GameDetail = () => {
         href={directionsUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="btn btn-dark w-100"
+        className="btn btn-dark w-100 mb-2"
       >
         Get directions
       </a>
+
+      {user ? (
+        <Link to={`/game/${id}/messages`} className="btn btn-outline-dark w-100 fw-bold">
+          Message board
+        </Link>
+      ) : (
+        <button
+          className="btn btn-outline-dark w-100"
+          onClick={() => signInWithGoogle().catch(() => {})}
+        >
+          Sign in to read and post messages
+        </button>
+      )}
     </div>
   );
 };

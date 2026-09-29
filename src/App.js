@@ -4,6 +4,7 @@ import NavBar from './components/NavBar';
 import Home from './components/Home';
 import Schedule from './components/Schedule';
 import GameDetail from './components/GameDetail';
+import MessageBoard from './components/MessageBoard';
 
 const App = () => (
   <HashRouter>
@@ -13,6 +14,7 @@ const App = () => (
         <Route path="/" element={<Home />} />
         <Route path="/games" element={<Schedule />} />
         <Route path="/game/:id" element={<GameDetail />} />
+        <Route path="/game/:id/messages" element={<MessageBoard />} />
       </Routes>
     </main>
     <NavBar />
